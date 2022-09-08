@@ -41,23 +41,45 @@ public class BoardDAO {
             e.printStackTrace();
             return -1;
         }
-        System.out.print("회원번호 "+member_num+"으로 ");
+        if (member_num != -1 )System.out.print("회원번호 "+member_num+"으로 ");
         return member_num;
 
     }
 
     public void memInsert(){
         Scanner sc = new Scanner(System.in);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
         System.out.println("회원가입에 필요한 정보를 입력 하세요");
         System.out.print("닉네임 : ");
-        String nickname = sc.next();
+        String nickname, pwd, pwdCheck;
+        nickname = sc.next();
         while (true){
-            System.out.print("비밀번호 : ");
-            String pwd = sc.next();
+            System.out.print("비밀번호(8자리 초과, 최대 20자) : ");
+            pwd = sc.next();
+            if (pwd.length() <= 8 || pwd.length() > 20) {
+                System.out.println("비밀번호의 길이를 확인해주세요");
+                continue;
+            }
+            System.out.print("비밀번호 확인: ");
+            pwdCheck = sc.next();
+            if (!pwd.equals(pwdCheck)) System.out.println("비밀번호와 비밀번호 확인이 일치하지 않습니다 다시 입력해주세요");
+            else break;
         }
 
+        String sql = "INSERT INTO MEMBER(MEMBER_NUM, NICKNAME, PWD) VALUES (MEMBER_NUM.NEXTVAL, ?, ?)";
+        try{
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, nickname);
+            pstmt.setString(2, pwd);
+            pstmt.executeUpdate();
 
-
+        } catch (Exception e){e.printStackTrace();}
+        Common.close(pstmt);
+        Common.close(conn);
+        System.out.println(nickname + "회원님의 가입이 성공적으로 완료되었습니다");
     }
 
 }

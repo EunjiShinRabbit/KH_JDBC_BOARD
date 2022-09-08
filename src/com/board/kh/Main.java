@@ -34,11 +34,12 @@ public class Main {
                 + " " + rs.getString("PWD"));
             }
         } catch(Exception e) {}
-
-        while(true){
+        
+        int  memberNum = -1; // 게시판을 사용할 멤버아이디 
+        while(true){ // 로그인 하는 while문
             System.out.println("===== [KH 커뮤니티 게시판] =====");
             System.out.println("로그인을 해주세요\n[1]로그인(기존회원) [2]회원가입(신규회원) [3]종료");
-            int selNum, memberNum;
+            int selNum;
             selNum = sc.nextInt();
             switch (selNum){
                 case 1:
@@ -62,9 +63,14 @@ public class Main {
                     if(!isWrongPwd) { break; }
                 case 2:
                     System.out.println("신규 회원 가입 절차를 진행합니다");
+                    dao.memInsert();
                     break;
                 case 3: System.out.println("게시판 프로그램을 종료합니다"); return;
             }
+            if (memberNum != -1) break;
         }
+        // 게시판 동작하는 while 문
+        
+
     }
 }
