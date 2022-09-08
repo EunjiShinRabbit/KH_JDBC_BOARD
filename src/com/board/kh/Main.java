@@ -74,7 +74,7 @@ public class Main {
                 case 1:
                     System.out.println("[1]최신 게시글 조회(5개) [2]카테고리별 게시글 조회 ");
                     int tempSel = sc.nextInt();
-                    if (tempSel == 1) dao.recentSelect();
+                    if (tempSel == 1) dao.recentSelect(memberNum);
                     else if (tempSel == 2){
                         List<String> boardName =dao.boardList();
                         System.out.println("게시글을 조회할 게시판을 선택하세요");
@@ -82,7 +82,7 @@ public class Main {
                         for(String e : boardName)System.out.print("[" + boardCnt++ +"]" + e + " ");
                         System.out.println();
                         int tempSel2 = sc.nextInt();
-                        dao.boardSelect(boardName, tempSel2);
+                        dao.boardSelect(boardName, tempSel2, memberNum);
                     }
                     break;
                 case 2:

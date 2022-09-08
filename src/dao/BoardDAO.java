@@ -130,7 +130,8 @@ public class BoardDAO {
         System.out.println(nickname + "회원님의 가입이 성공적으로 완료되었습니다");
     }
 
-    public void recentSelect(){
+    public void recentSelect(int memberNum){
+        Scanner sc = new Scanner(System.in);
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -164,7 +165,16 @@ public class BoardDAO {
                     System.out.println(temp_Rs.getString("댓글작성자") + " / " +
                             temp_Rs.getString("댓글내용"));
                 }
-                System.out.println();
+                System.out.println("조회된 현재 게시글에 좋아요를 주시겠습니까? (y/n)");
+                char sel1 = sc.next().charAt(0);
+                if (sel1 == 'y' || sel1 == 'Y'){
+                    goodInsert(memberNum, writeNum);
+                }
+                System.out.println("조회된 현재 게시글에 댓글을 다시겠습니까? (y/n)");
+                char sel2 = sc.next().charAt(0);
+                if (sel2 == 'y' || sel2 == 'Y'){
+                    commentsInsert(memberNum, writeNum);
+                }
             }
         } catch (Exception e){e.printStackTrace();}
     }
@@ -186,7 +196,8 @@ public class BoardDAO {
         } catch (Exception e){e.printStackTrace();}
         return boardName;
     }
-    public void boardSelect(List<String> boardName, int selNum){
+    public void boardSelect(List<String> boardName, int selNum, int memberNum){
+        Scanner sc = new Scanner(System.in);
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -223,7 +234,16 @@ public class BoardDAO {
                     System.out.println(temp_Rs.getString("댓글작성자") + " / " +
                             temp_Rs.getString("댓글내용"));
                 }
-                System.out.println();
+                System.out.println("조회된 현재 게시글에 좋아요를 주시겠습니까? (y/n)");
+                char sel1 = sc.next().charAt(0);
+                if (sel1 == 'y' || sel1 == 'Y'){
+                    goodInsert(memberNum, writeNum);
+                }
+                System.out.println("조회된 현재 게시글에 댓글을 다시겠습니까? (y/n)");
+                char sel2 = sc.next().charAt(0);
+                if (sel2 == 'y' || sel2 == 'Y'){
+                    commentsInsert(memberNum, writeNum);
+                }
             }
         } catch (Exception e){e.printStackTrace();}
     }
@@ -245,7 +265,7 @@ public class BoardDAO {
             pstmt.setString(1, keyword);
             pstmt.setString(2, keyword);
             rs = pstmt.executeQuery();
-            System.out.println("게시판의 글을 조회합니다");
+            System.out.println(keyword+"가 포함된 게시글을 조회합니다");
             System.out.println("게시글 번호 / 게시판명 / 게시글명 / 작성자 / 작성일 / 글 내용 / 좋아요수");
             while (rs.next()) {
                 int writeNum = rs.getInt("게시글 번호");
@@ -426,4 +446,46 @@ public class BoardDAO {
         } catch (Exception e){e.printStackTrace();}
     }
 
+    public void commentsInsert(int memberNum, int writeNum){
+        Scanner sc = new Scanner(System.in);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        System.out.println("댓글 작성에 필요한 정보를 입력 하세요");
+        System.out.println("댓글 내용 : ");
+        String commentsContent = sc.nextLine();
+
+        try{
+            String sql = "INSERT INTO COMMENTS(MEMBER_NUM, COMMENT_CONTENT, WRITE_NUM) VALUES(?, ?, ?)";
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, memberNum);
+            pstmt.setString(2, commentsContent);
+            pstmt.setInt(3, writeNum);
+            pstmt.executeUpdate();
+
+        } catch (Exception e){e.printStackTrace();}
+        Common.close(pstmt);
+        Common.close(conn);
+        System.out.println("댓글의 작성이 성공적으로 완료되었습니다");
+    }
+
+    public void goodInsert(int memberNum, int writeNum){
+        Scanner sc = new Scanner(System.in);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try{
+            String sql = "INSERT INTO GOOD VALUES(?, ?)";
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, writeNum);
+            pstmt.setInt(2, memberNum);
+            pstmt.executeUpdate();
+
+        } catch (Exception e){e.printStackTrace();}
+        Common.close(pstmt);
+        Common.close(conn);
+        System.out.println("게시글 좋아요가 성공적으로 반영되었습니다");
+    }
 }
