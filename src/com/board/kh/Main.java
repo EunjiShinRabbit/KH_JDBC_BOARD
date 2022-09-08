@@ -26,7 +26,7 @@ public class Main {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        // dao.selectMem();
+        dao.selectMem();
         // dao.selectWrite();
 
 
