@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="46f09d76-87f0-4fef-ad83-a71fc4a7cdcb" name="Changes" comment="final test123" />
+    <list default="true" id="46f09d76-87f0-4fef-ad83-a71fc4a7cdcb" name="Changes" comment="final test12345!!">
+      <change beforePath="$PROJECT_DIR$/src/com/board/kh/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/board/kh/Main.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -130,7 +132,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662623402286</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="final test12345!!">
+      <created>1662624012099</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1662624012099</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -152,6 +161,7 @@
     <MESSAGE value="test commit2233" />
     <MESSAGE value="final test" />
     <MESSAGE value="final test123" />
-    <option name="LAST_COMMIT_MESSAGE" value="final test123" />
+    <MESSAGE value="final test12345!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="final test12345!!" />
   </component>
 </project>

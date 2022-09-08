@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    // 자꾸왜안되지ㅜㅠ
     public static void main(String[] args) {
         boardSelect();
     }
