@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -17,25 +19,17 @@ public class Main {
     public static void boardSelect(){
         Scanner sc = new Scanner(System.in);
         BoardDAO dao = new BoardDAO();
+        int  memberNum = -1; // 게시판을 사용할 멤버아이디
 
         Connection conn = null;
         Statement stmt = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        // 테이블에 정보 잘 들어있는지 먼저 확인
-        try{
-            String sql = "SELECT * FROM MEMBER";
-            conn = Common.getConnection(); // 연결 생성
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-            System.out.println("멤버 테이블의 정보를 불러옵니다");
-            while (rs.next()) {
-                System.out.println(rs.getInt("MEMBER_NUM")+" "+rs.getString("NICKNAME")
-                + " " + rs.getString("PWD"));
-            }
-        } catch(Exception e) {}
-        
-        int  memberNum = -1; // 게시판을 사용할 멤버아이디 
+
+        dao.selectMem();
+        dao.selectWrite();
+
+
         while(true){ // 로그인 하는 while문
             System.out.println("===== [KH 커뮤니티 게시판] =====");
             System.out.println("로그인을 해주세요\n[1]로그인(기존회원) [2]회원가입(신규회원) [3]종료");
@@ -70,7 +64,43 @@ public class Main {
             if (memberNum != -1) break;
         }
         // 게시판 동작하는 while 문
-        
+        while (true){
+            System.out.println("이용할 게시판 메뉴를 선택해주세요");
+            System.out.println("[1]게시글 조회 [2]게시글 검색 [3]게시글 등록 [4]기존 게시글 수정 [5]기존 게시글 삭제 [6]종료");
+            int selNum;
+            selNum = sc.nextInt();
+            switch (selNum){
+                case 1:
+                    System.out.println("[1]최신 게시글 조회(5개) [2]카테고리별 게시글 조회 ");
+                    int tempSel = sc.nextInt();
+                    if (tempSel == 1) dao.recentSelect();
+                    else if (tempSel == 2){
+                        List<String> boardName =dao.boardList();
+                        System.out.println("게시글을 조회할 게시판을 선택하세요");
+                        int boardCnt = 1;
+                        for(String e : boardName)System.out.print("[" + boardCnt++ +"]" + e + " ");
+                        System.out.println();
+                        int tempSel2 = sc.nextInt();
+                        dao.boardSelect(boardName, tempSel2);
+                    }
+                    break;
+                case 2:
+                    System.out.println("검색할 게시글의 키워드를 입력하세요");
+                    String keyword = sc.next();
+                    dao.writeSearchKeyword(keyword);
+                    break;
+                case 3:
+                    dao.writeInsert(memberNum);
+                    break;
+                case 4:
+                    dao.writeUpdateMember(memberNum);
+                    break;
+                case 5:
+                    dao.writeDeleteMember(memberNum);
+                    break;
+                case 6: System.out.println("게시판 프로그램을 종료합니다"); return;
+            }
+        }
 
     }
 }
