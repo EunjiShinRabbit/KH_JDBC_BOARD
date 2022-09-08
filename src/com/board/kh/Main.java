@@ -26,8 +26,8 @@ public class Main {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        dao.selectMem();
-        dao.selectWrite();
+        // dao.selectMem();
+        // dao.selectWrite();
 
 
         while(true){ // 로그인 하는 while문
@@ -63,7 +63,7 @@ public class Main {
             }
             if (memberNum != -1) break;
         }
-        // 게시판 동작하는 while 문
+        // 게시판 동작하는 while 문@
         while (true){
             System.out.println("이용할 게시판 메뉴를 선택해주세요");
             System.out.println("[1]게시글 조회 [2]게시글 검색 [3]게시글 등록 [4]기존 게시글 수정 [5]기존 게시글 삭제 [6]종료");
