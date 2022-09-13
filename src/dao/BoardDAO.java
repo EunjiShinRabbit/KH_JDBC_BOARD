@@ -511,16 +511,29 @@ public class BoardDAO {
         Scanner sc = new Scanner(System.in);
         Connection conn = null;
         PreparedStatement pstmt = null;
+        PreparedStatement temp_pstmt = null;
 
         try{
-            String sql = "INSERT INTO GOOD VALUES(?, ?)";
+            String temp_Sql = "SELECT COUNT(*) \"좋아요 수\" FROM GOOD WHERE WRITE_NUM = ? AND MEMBER_NUM = ?";
             conn = Common.getConnection();
+            temp_pstmt = conn.prepareStatement(temp_Sql);
+            temp_pstmt.setInt(1, writeNum);
+            temp_pstmt.setInt(2, memberNum);
+            ResultSet rs = temp_pstmt.executeQuery();
+            rs.next();
+            int goodCnt = rs.getInt("좋아요 수");
+            if (goodCnt > 0){
+                System.out.println("이미 좋아요를 한 게시글에 다시 좋아요를 할 수 없습니다!");
+                return;
+            }
+            String sql = "INSERT INTO GOOD VALUES(?, ?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, writeNum);
             pstmt.setInt(2, memberNum);
             pstmt.executeUpdate();
 
         } catch (Exception e){e.printStackTrace();}
+        Common.close(temp_pstmt);
         Common.close(pstmt);
         Common.close(conn);
         System.out.println("게시글 좋아요가 성공적으로 반영되었습니다");
