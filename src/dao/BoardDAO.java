@@ -95,11 +95,34 @@ public class BoardDAO {
         Scanner sc = new Scanner(System.in);
         Connection conn = null;
         PreparedStatement pstmt = null;
+        PreparedStatement temp_pstmt = null;
+
 
         System.out.println("회원가입에 필요한 정보를 입력 하세요");
-        System.out.print("닉네임 : ");
-        String nickname, pwd, pwdCheck;
-        nickname = sc.next();
+        String pwd, pwdCheck, nickname = null;
+        try{
+            while (true){
+                System.out.print("닉네임 : ");
+                nickname = sc.next();
+                conn = Common.getConnection();
+                String temp_sql = "SELECT COUNT(*) \"중복\" FROM MEMBER WHERE NICKNAME = ?";
+                temp_pstmt = conn.prepareStatement(temp_sql);
+                temp_pstmt.setString(1, nickname);
+                ResultSet rs = temp_pstmt.executeQuery();
+                rs.next();
+                if (rs.getInt("중복") == 0){
+                    System.out.println("사용 가능한 닉네임입니다");
+                    break;
+                }
+                else{
+                    System.out.println(nickname + "다른 회원과 중복되는 닉네임은 사용 불가능합니다");
+                    System.out.println("새로운 닉네임을 입력해주세요");
+                }
+            }
+        } catch (Exception e){ e.printStackTrace();}
+        Common.close(temp_pstmt);
+        Common.close(conn);
+
         while (true){
             System.out.print("비밀번호(8자리 초과, 최대 20자) : ");
             pwd = sc.next();
@@ -537,5 +560,150 @@ public class BoardDAO {
         Common.close(pstmt);
         Common.close(conn);
         System.out.println("게시글 좋아요가 성공적으로 반영되었습니다");
+    }
+
+    public void memberUpdate(int memberNum){
+        Scanner sc = new Scanner(System.in);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            System.out.println("회원 정보를 조회합니다");
+            String sql = "SELECT W.MEMBER_NUM \"회원 번호\", NICKNAME \"닉네임\", RPAD(SUBSTR(PWD, 1, 1), LENGTH(PWD), '*') \"비밀번호\", " +
+                    "REG_DATE \"가입 일자\", COUNT(*) \"게시글 수\", GRADE \"등급\" " +
+                    "FROM WRITE W, MEMBER M, MEMGRADE G " +
+                    "WHERE M.MEMBER_NUM = W.MEMBER_NUM AND M.MEMBER_NUM = ? " +
+                    "AND (SELECT COUNT(*) FROM WRITE W " +
+                    "GROUP BY W.MEMBER_NUM " +
+                    "HAVING W.MEMBER_NUM = M.MEMBER_NUM) BETWEEN LOWRITE AND HIWRITE " +
+                    "GROUP BY W.MEMBER_NUM, NICKNAME, RPAD(SUBSTR(PWD, 1, 1), LENGTH(PWD), '*'), REG_DATE, GRADE";
+            conn = Common.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, memberNum);
+            rs = pstmt.executeQuery();
+            rs.next();
+            System.out.println("회원 번호 : " + rs.getInt("회원 번호") + " / 닉네임 : " +
+                    rs.getString("닉네임") + " / 비밀번호 : " + rs.getString("비밀번호")
+                    + " / 가입 일자 : " + rs.getDate("가입 일자") + " / 게시글 수 : " +
+                    rs.getInt("게시글 수") + " / 등급 : " + rs.getInt("등급"));
+
+            System.out.println("회원 정보를 수정하시겠습니까? (y/n)");
+            char sel = sc.next().charAt(0);
+            if (sel == 'y' || sel == 'Y'){
+                System.out.println("회원정보 수정 메뉴를 선택하세요");
+                System.out.println("[1]닉네임 수정 [2]비밀번호 수정 [3]닉네임과 비밀번호 수정");
+                int tempSel = sc.nextInt();
+                switch (tempSel){
+                    case 1:
+                        String sql1 = "UPDATE MEMBER SET NICKNAME = ? WHERE MEMBER_NUM = ?";
+                        PreparedStatement pstmt1 = null;
+                        PreparedStatement temp_pstmt1 = null;
+                        String nickname1 = null;
+                        System.out.println("수정할 회원 정보를 입력 하세요");
+                        while (true){
+                            System.out.print("닉네임 : ");
+                            nickname1 = sc.next();
+                            String temp_sql1 = "SELECT COUNT(*) \"중복\" FROM MEMBER WHERE NICKNAME = ?";
+                            temp_pstmt1 = conn.prepareStatement(temp_sql1);
+                            temp_pstmt1 = conn.prepareStatement(temp_sql1);
+                            temp_pstmt1.setString(1, nickname1);
+                            ResultSet temp_rs = temp_pstmt1.executeQuery();
+                            temp_rs.next();
+                            if (temp_rs.getInt("중복") == 0){
+                                System.out.println("사용 가능한 닉네임입니다");
+                                break;
+                            }
+                            else{
+                                System.out.println(nickname1 + "다른 회원과 중복되는 닉네임은 사용 불가능합니다");
+                                System.out.println("다른 닉네임을 입력해주세요");
+                            }
+                        }
+                        pstmt1 = conn.prepareStatement(sql1);
+                        pstmt1.setString(1, nickname1);
+                        pstmt1.setInt(2, memberNum);
+                        pstmt1.executeUpdate();
+                        System.out.println("닉네임이 변경 완료되었습니다");
+                        Common.close(pstmt1);
+                        break;
+
+                    case 2:
+                        String sql2 = "UPDATE MEMBER SET PWD = ? WHERE MEMBER_NUM = ?";
+                        PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+                        String pwd1, pwdCheck1;
+                        System.out.println("수정할 회원 정보를 입력 하세요");
+
+                        while (true){
+                            System.out.print("비밀번호(8자리 초과, 최대 20자) : ");
+                            pwd1 = sc.next();
+                            if (pwd1.length() <= 8 || pwd1.length() > 20) {
+                                System.out.println("비밀번호의 길이를 확인해주세요");
+                                continue;
+                            }
+                            System.out.print("비밀번호 확인: ");
+                            pwdCheck1 = sc.next();
+                            if (!pwd1.equals(pwdCheck1)) System.out.println("비밀번호와 비밀번호 확인이 일치하지 않습니다 다시 입력해주세요");
+                            else break;
+                        }
+                        pstmt2.setString(1, pwd1);
+                        pstmt2.setInt(2, memberNum);
+                        pstmt2.executeUpdate();
+                        System.out.println("비밀번호가 변경 완료되었습니다");
+                        Common.close(pstmt2);
+                        break;
+
+                    case 3:
+                        String sql3 = "UPDATE MEMBER SET NICKNAME = ?, PWD = ? WHERE MEMBER_NUM = ?";
+                        PreparedStatement pstmt3 = conn.prepareStatement(sql3);
+                        PreparedStatement temp_pstmt3 = null;
+                        String pwd, pwdCheck, nickname = null;
+                        System.out.println("수정할 회원 정보를 입력 하세요");
+                        try{
+                            while (true){
+                                System.out.print("닉네임 : ");
+                                nickname = sc.next();
+                                String temp_sql3 = "SELECT COUNT(*) \"중복\" FROM MEMBER WHERE NICKNAME = ?";
+                                temp_pstmt3 = conn.prepareStatement(temp_sql3);
+                                temp_pstmt3 = conn.prepareStatement(temp_sql3);
+                                temp_pstmt3.setString(1, nickname);
+                                ResultSet temp_rs = temp_pstmt3.executeQuery();
+                                temp_rs.next();
+                                if (temp_rs.getInt("중복") == 0){
+                                    System.out.println("사용 가능한 닉네임입니다");
+                                    break;
+                                }
+                                else{
+                                    System.out.println(nickname + "다른 회원과 중복되는 닉네임은 사용 불가능합니다");
+                                    System.out.println("다른 닉네임을 입력해주세요");
+                                }
+                            }
+                        } catch (Exception e){ e.printStackTrace();}
+                        Common.close(temp_pstmt3);
+                        while (true){
+                            System.out.print("비밀번호(8자리 초과, 최대 20자) : ");
+                            pwd = sc.next();
+                            if (pwd.length() <= 8 || pwd.length() > 20) {
+                                System.out.println("비밀번호의 길이를 확인해주세요");
+                                continue;
+                            }
+                            System.out.print("비밀번호 확인: ");
+                            pwdCheck = sc.next();
+                            if (!pwd.equals(pwdCheck)) System.out.println("비밀번호와 비밀번호 확인이 일치하지 않습니다 다시 입력해주세요");
+                            else break;
+                        }
+                        pstmt3.setString(1, nickname);
+                        pstmt3.setString(2, pwd);
+                        pstmt3.setInt(3, memberNum);
+                        pstmt3.executeUpdate();
+                        System.out.println("닉네임과 비밀번호가 변경 완료되었습니다");
+                        Common.close(pstmt3);
+                        break;
+
+                    default: System.out.println("잘못된 입력입니다");
+                }
+            }
+        } catch (Exception e){ e.printStackTrace(); }
+        Common.close(pstmt);
+        Common.close(conn);
+
     }
 }

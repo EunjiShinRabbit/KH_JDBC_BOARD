@@ -67,7 +67,7 @@ public class Main {
         // 게시판 동작하는 while 문@
         while (true){
             System.out.println("이용할 게시판 메뉴를 선택해주세요");
-            System.out.println("[1]게시글 조회 [2]게시글 검색 [3]게시글 등록 [4]기존 게시글 수정 [5]기존 게시글 삭제 [6]종료");
+            System.out.println("[1]게시글 조회 [2]게시글 검색 [3]게시글 등록 [4]기존 게시글 수정 [5]기존 게시글 삭제 [6]회원정보 [7]종료");
             int selNum;
             selNum = sc.nextInt();
             switch (selNum){
@@ -99,7 +99,16 @@ public class Main {
                 case 5:
                     dao.writeDeleteMember(memberNum);
                     break;
-                case 6: System.out.println("게시판 프로그램을 종료합니다"); return;
+                case 6:
+                    System.out.println("[1]회원정보 조회 및 수정 [9]회원 탈퇴 ");
+                    int tempSel2 = sc.nextInt();
+                    switch (tempSel2){
+                        case 1: dao.memberUpdate(memberNum); break;
+                        case 9: System.out.println("가입하는건 마음대로지만 탈퇴는 아니란다"); break;
+                        default: System.out.println("잘못된 입력입니다"); break;
+                    }
+                case 7: System.out.println("게시판 프로그램을 종료합니다"); return;
+
             }
         }
 

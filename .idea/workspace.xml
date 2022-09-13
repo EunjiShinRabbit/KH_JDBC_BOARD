@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="46f09d76-87f0-4fef-ad83-a71fc4a7cdcb" name="Changes" comment="게시글 작성시 성실회원 게시판 등급 제한">
+    <list default="true" id="46f09d76-87f0-4fef-ad83-a71fc4a7cdcb" name="Changes" comment="게시글 좋아요시 중복 체크해서 중복 좋아요 막음">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/JDBC_BOARD/com/board/kh/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBC_BOARD/com/board/kh/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/JDBC_BOARD/dao/BoardDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/JDBC_BOARD/dao/BoardDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/board/kh/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/board/kh/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/BoardDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BoardDAO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -163,7 +164,14 @@
       <option name="project" value="LOCAL" />
       <updated>1663031791005</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="게시글 좋아요시 중복 체크해서 중복 좋아요 막음">
+      <created>1663032348097</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1663032348097</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -189,6 +197,7 @@
     <MESSAGE value="좋아요, 댓글 달기 최신게시글 조회에 추가" />
     <MESSAGE value="좋아요, 댓글 달기 게시글 조회에 추가" />
     <MESSAGE value="게시글 작성시 성실회원 게시판 등급 제한" />
-    <option name="LAST_COMMIT_MESSAGE" value="게시글 작성시 성실회원 게시판 등급 제한" />
+    <MESSAGE value="게시글 좋아요시 중복 체크해서 중복 좋아요 막음" />
+    <option name="LAST_COMMIT_MESSAGE" value="게시글 좋아요시 중복 체크해서 중복 좋아요 막음" />
   </component>
 </project>
