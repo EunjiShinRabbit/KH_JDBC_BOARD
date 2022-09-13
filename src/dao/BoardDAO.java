@@ -2,10 +2,7 @@ package dao;
 
 import com.board.kh.util.Common;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -248,7 +245,8 @@ public class BoardDAO {
         } catch (Exception e){e.printStackTrace();}
     }
 
-    public void writeSearchKeyword(String keyword){
+    public void writeSearchKeyword(int memberNum, String keyword){
+        Scanner sc =  new Scanner(System.in);
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -285,7 +283,16 @@ public class BoardDAO {
                     System.out.println(temp_Rs.getString("댓글작성자") + " / " +
                             temp_Rs.getString("댓글내용"));
                 }
-                System.out.println();
+                System.out.println("조회된 현재 게시글에 좋아요를 주시겠습니까? (y/n)");
+                char sel1 = sc.next().charAt(0);
+                if (sel1 == 'y' || sel1 == 'Y'){
+                    goodInsert(memberNum, writeNum);
+                }
+                System.out.println("조회된 현재 게시글에 댓글을 다시겠습니까? (y/n)");
+                char sel2 = sc.next().charAt(0);
+                if (sel2 == 'y' || sel2 == 'Y'){
+                    commentsInsert(memberNum, writeNum);
+                }
             }
         } catch (Exception e){e.printStackTrace();}
     }
@@ -294,13 +301,43 @@ public class BoardDAO {
         Scanner sc = new Scanner(System.in);
         Connection conn = null;
         PreparedStatement pstmt = null;
-        System.out.println("게시글을 작성할 게시판을 선택하세요");
-        List<String> boardName =boardList();
-        int boardCnt = 1;
-        for(String e : boardName)System.out.print("[" + boardCnt++ +"]" + e + " ");
-        System.out.println();
-        int selNum = sc.nextInt();
-        String name = boardName.get(selNum - 1);
+        String name = null;
+
+        try{
+            while(true){
+                System.out.println("게시글을 작성할 게시판을 선택하세요");
+                List<String> boardName =boardList();
+                int boardCnt = 1;
+                for(String e : boardName)System.out.print("[" + boardCnt++ +"]" + e + " ");
+                System.out.println();
+                int selNum = sc.nextInt();
+                name = boardName.get(selNum - 1);
+                String temp_Sql = "SELECT GRADE \"등급\" " +
+                        "FROM WRITE W, MEMBER M, MEMGRADE G " +
+                        "WHERE M.MEMBER_NUM = W.MEMBER_NUM AND M.MEMBER_NUM = ? " +
+                        "AND (SELECT COUNT(*) FROM WRITE W " +
+                        "GROUP BY W.MEMBER_NUM " +
+                        "HAVING W.MEMBER_NUM = M.MEMBER_NUM) BETWEEN LOWRITE AND HIWRITE " +
+                        "GROUP BY W.MEMBER_NUM, NICKNAME, GRADE";
+                conn = Common.getConnection();
+                PreparedStatement temp_Pstmt = conn.prepareStatement(temp_Sql);
+                temp_Pstmt.setInt(1, memberNum);
+                ResultSet rs = temp_Pstmt.executeQuery();
+                rs.next();
+                int memGrade = rs.getInt("등급");
+                Common.close(temp_Pstmt);
+                Common.close(conn);
+                if (name.equals("성실회원") && memGrade < 2) {
+                    System.out.println("게시판에 글을 작성할 권한이 없습니다!");
+                    System.out.println("(성실회원 게시판은 2등급부터 사용 가능합니다. 현재 등급 : "+ memGrade+" )");
+                    continue;
+                }
+                else break;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
         System.out.println("게시글 작성에 필요한 정보를 입력 하세요");
         System.out.println("게시글 제목 : ");
         sc.nextLine();

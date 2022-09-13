@@ -88,7 +88,7 @@ public class Main {
                 case 2:
                     System.out.println("검색할 게시글의 키워드를 입력하세요");
                     String keyword = sc.next();
-                    dao.writeSearchKeyword(keyword);
+                    dao.writeSearchKeyword(memberNum, keyword);
                     break;
                 case 3:
                     dao.writeInsert(memberNum);
