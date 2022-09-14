@@ -3,6 +3,7 @@ package dao;
 import com.board.kh.util.Common;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -704,6 +705,118 @@ public class BoardDAO {
         } catch (Exception e){ e.printStackTrace(); }
         Common.close(pstmt);
         Common.close(conn);
+    }
 
+    public void memberDelete(int memberNum){
+        Scanner sc = new Scanner(System.in);
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        PreparedStatement temp_pstmt = null;
+        ResultSet rs = null;
+
+        System.out.println("정말,, 탈퇴하시나요,,,,,,,");
+        System.out.println("정말로,,,  탈퇴하시려면,,,,,,,,,,");
+        System.out.println("회원 정보를 입력 부탁드려요,,,,,,,,,,,,,,ㅠㅠㅠ");
+
+        try{
+            Date reg_date;
+            String year, month, day;
+            String nickname, pwd;
+
+            conn = Common.getConnection();
+            String temp_sql = "SELECT NICKNAME \"닉네임\", PWD \"비밀번호\", REG_DATE \"가입 일자\"\n" +
+                    "FROM MEMBER WHERE MEMBER_NUM = ? ";
+            temp_pstmt = conn.prepareStatement(temp_sql);
+            temp_pstmt.setInt(1, memberNum);
+            rs = temp_pstmt.executeQuery();
+            rs.next();
+            nickname = rs.getString("닉네임");
+            pwd = rs.getString("비밀번호");
+            reg_date = rs.getDate("가입 일자");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("M");
+            SimpleDateFormat sdf3 = new SimpleDateFormat("d");
+            year = sdf1.format(reg_date);
+            month = sdf2.format(reg_date);
+            day = sdf3.format(reg_date);
+            String temp_nickname, temp_pwd, temp_year;
+            int temp_month, temp_day;
+            for(int i = 1 ;  i<= 3 ;  i++){
+                System.out.print("닉네임 : ");
+                temp_nickname = sc.next();
+                if (! temp_nickname.equals(nickname)){
+                   if(i < 3){
+                       System.out.println(i + "번째 입력 오류입니다! 3회 입력 오류시 회원 탈퇴를 종료합니다");
+                       continue;
+                   }
+                   else {
+                       System.out.println(i + "번째 입력 오류로 회원 탈퇴를 종료합니다");
+                       return;
+                   }
+                }
+                System.out.print("비밀번호 : ");
+                temp_pwd = sc.next();
+                if (! temp_pwd.equals(pwd)){
+                    if(i < 3){
+                        System.out.println(i + "번째 입력 오류입니다! 3회 입력 오류시 회원 탈퇴를 종료합니다");
+                        continue;
+                    }
+                    else {
+                        System.out.println(i + "번째 입력 오류로 회원 탈퇴를 종료합니다");
+                        return;
+                    }
+                }
+                System.out.print("가입 년도 4자리 : ");
+                temp_year = sc.next();
+                if (! temp_year.equals(year)) {
+                    if (i < 3) {
+                        System.out.println(i + "번째 입력 오류입니다! 3회 입력 오류시 회원 탈퇴를 종료합니다");
+                        continue;
+                    } else {
+                        System.out.println(i + "번째 입력 오류로 회원 탈퇴를 종료합니다");
+                        return;
+                    }
+                }
+                else break;
+            }
+            // 멤버를 삭제하려면 그전에 그 멤버의 good, dislike, 댓글을 삭제한 후
+            // 그 멤버가 작성한 게시글에 달린 댓글을 삭제하고 게시글을 삭제한 후 멤버 삭제 가능
+            String del_sql1 = "DELETE FROM GOOD WHERE MEMBER_NUM = ? ";
+            PreparedStatement del_pstmt1 = conn.prepareStatement(del_sql1);
+            del_pstmt1.setInt(1, memberNum);
+            del_pstmt1.executeUpdate();
+
+            String del_sql2 = "DELETE FROM DISLIKE WHERE MEMBER_NUM = ? ";
+            PreparedStatement del_pstmt2 = conn.prepareStatement(del_sql2);
+            del_pstmt2.setInt(1, memberNum);
+            del_pstmt2.executeUpdate();
+
+            String del_sql3 = "DELETE FROM COMMENTS WHERE MEMBER_NUM = ? ";
+            PreparedStatement del_pstmt3 = conn.prepareStatement(del_sql3);
+            del_pstmt3.setInt(1, memberNum);
+            del_pstmt3.executeUpdate();
+
+            String del_sql4 = "DELETE FROM COMMENTS C " +
+                    "WHERE C.WRITE_NUM = (SELECT W.WRITE_NUM FROM WRITE W WHERE W.WRITE_NUM = C.WRITE_NUM AND  W.MEMBER_NUM = ?)";
+            PreparedStatement del_pstmt4 = conn.prepareStatement(del_sql4);
+            del_pstmt4.setInt(1, memberNum);
+            del_pstmt4.executeUpdate();
+
+            String del_sql5 = "DELETE FROM WRITE WHERE MEMBER_NUM = ? ";
+            PreparedStatement del_pstmt5 = conn.prepareStatement(del_sql5);
+            del_pstmt5.setInt(1, memberNum);
+            del_pstmt5.executeUpdate();
+
+            String sql = "DELETE FROM MEMBER WHERE MEMBER_NUM = ? ";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, memberNum);
+            pstmt.executeUpdate();
+
+            System.out.println("ㅠㅠㅠㅠㅠㅠㅠ탈퇴가ㅠㅠㅠㅠㅠ완료되었어요ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
+            System.out.println("다음에 꼭 다시 와주세요,,,,,ㅠㅠㅠ");
+
+        } catch (Exception e){e.printStackTrace();}
+        Common.close(pstmt);
+        Common.close(conn);
     }
 }

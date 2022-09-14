@@ -102,11 +102,14 @@ public class Main {
                 case 6:
                     System.out.println("[1]회원정보 조회 및 수정 [9]회원 탈퇴 ");
                     int tempSel2 = sc.nextInt();
+                    boolean isQuit = false;
                     switch (tempSel2){
                         case 1: dao.memberUpdate(memberNum); break;
-                        case 9: System.out.println("가입하는건 마음대로지만 탈퇴는 아니란다"); break;
+                        case 9: dao.memberDelete(memberNum); isQuit = true; break;
+                            //System.out.println("가입하는건 마음대로지만 탈퇴는 아니란다"); break;
                         default: System.out.println("잘못된 입력입니다"); break;
                     }
+                    if (!isQuit) break;
                 case 7: System.out.println("게시판 프로그램을 종료합니다"); return;
 
             }
